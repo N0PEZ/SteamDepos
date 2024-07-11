@@ -1,31 +1,24 @@
-from requests_html import HTMLSession
-
+import re
+import requests
+from bs4 import BeautifulSoup
 
 def get_autobuy(steam_listing):
-    url='https://steamcommunity.com/market/listings/730/'+steam_listing
-    session = HTMLSession()
-    response = session.get(url)
+    steam_url='https://steamcommunity.com/market/listings/730/'+steam_listing
+    html = requests.get(steam_url).text
+    soup = BeautifulSoup(html, 'lxml')
 
-    # Рендеринг JavaScript
-    response.html.render(sleep=3)  # Подождите несколько секунд для завершения рендеринга JavaScript
+    id = None
+    for script in soup.find_all('script'):
+        id_regex = re.search(r'Market_LoadOrderSpread\(([ 0-9]+)\)', script.text)
+        if id_regex:
+            id = id_regex.groups()[0].strip()
+            break
 
-    if item_type in ['weapon', 'agent']:
-        price_xpath = '/html/body/div[1]/div[7]/div[4]/div[1]/div[4]/div[1]/div[3]/div[4]/div[1]/div[1]/div[2]/span[2]/text()'
+    if id:
+        id_url = f"https://steamcommunity.com/market/itemordershistogram?country=RU&language=english&currency=5&item_nameid={id}&two_factor=0"
+        html = requests.get(id_url).json()
+        soup = BeautifulSoup(html['buy_order_summary'], 'lxml')
+        return float((soup.select_one('span:last-child').text).replace(' pуб.','').replace(',','.'))
     else:
-        price_xpath = '//*[@id="market_buyorder_info_details"]/div[1]/span[2]/text()'
-
-    price = response.html.xpath(price_xpath, first=True)
-
-    if price:
-        return price
-    else:
-        print("Price not found on the page")
-        return None
-
-
-# Пример использования
-url = "https://steamcommunity.com/market/listings/730/AK-47%20%7C%20Slate%20%28Field-Tested%29"
-item_type = "weapon"  # или 'agent', или 'other' в зависимости от типа предмета
-price = get_autobuy(url)
-if price:
-    print(f"Auto-buy price: {price}")
+        return 0
+        exit()
