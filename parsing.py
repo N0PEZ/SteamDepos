@@ -32,11 +32,14 @@ def cs_market_api(url):
         ''')
         conn.commit()
 
+        count=0
 
         for item in items:
             name = item.get('market_hash_name', '')
             price = round(float(item.get('price', 0)) * 1.075,2)
             if price > 8000 and price < 8500:
+                count+=1
+                print(count)
                 steam_listing = format_name_for_steam(name)
                 steam_autobuy = get_autobuy(steam_listing)
                 print(steam_autobuy)
