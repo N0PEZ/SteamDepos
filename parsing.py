@@ -5,6 +5,7 @@ import link_maker
 from steam_parse import get_autobuy
 from time import sleep
 
+
 def format_name_for_steam(name):
     formatted_name = urllib.parse.quote(name, safe='')
     formatted_name = formatted_name.replace(' ', '%20').replace('&', '%26').replace("'", '%27').replace('|', '%7C').replace('(', '%28').replace(')', '%29')
@@ -35,13 +36,14 @@ def cs_market_api(url):
         for item in items:
             name = item.get('market_hash_name', '')
             price = round(float(item.get('price', 0)) * 1.075,2)
-            if price >= 10000 and price <=10035:
+            if price > 8000 and price < 8500:
                 steam_listing = format_name_for_steam(name)
                 steam_autobuy = get_autobuy(steam_listing)
+                print(steam_autobuy)
+                #sleep(10)
                 steam_autobuy_total = round(steam_autobuy*0.87,2)
                 profit_ratio = round(steam_autobuy_total/price,3)
                 link=link_maker.create_link(name,steam_listing)
-                sleep(10)
                 cursor.execute('''
                     INSERT OR REPLACE INTO items (name, link, market_total, steam_autobuy_total, profit_ratio)
                     VALUES (?, ?, ?, ?, ?)
