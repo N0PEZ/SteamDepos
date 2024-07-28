@@ -13,8 +13,9 @@ def format_name_for_steam(name):
 
 
 async def fetch_and_process(session, item, cursor):
-    name = item.get('market_hash_name', '')
-    price = round(float(item.get('price', 0)) * 1.075, 2)
+    name = item['market_hash_name']
+    market_price=item['price']
+    market_total = round(float(market_price) * 1.075, 2)
     steam_listing = format_name_for_steam(name)
     id = id_list.get(name, None)
     if id:
@@ -26,15 +27,14 @@ async def fetch_and_process(session, item, cursor):
                     try:
                         steam_autobuy = steam_data['buy_order_graph'][0][0]
                         steam_autobuy_total = round(steam_autobuy * 0.87, 2)
-                        profit_ratio = round(steam_autobuy_total / price, 3)
+                        profit_ratio = round(steam_autobuy_total / market_total, 3)
                         if profit_ratio >=0.9:
                             market_link = create_link(name, steam_listing)
                             steam_link = 'https://steamcommunity.com/market/listings/730/' + steam_listing
                             cursor.execute('''
-                                INSERT OR REPLACE INTO items (name, market_link, steam_link, market_total, steam_autobuy_total, profit_ratio)
-                                VALUES (?, ?, ?, ?, ?, ?)
-                            ''', (name, market_link, steam_link, price, steam_autobuy_total, profit_ratio))
-                            con.commit()
+                                INSERT OR REPLACE INTO items (name, market_link, steam_link, market_price, steam_autobuy, market_total, steam_autobuy_total, profit_ratio)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            ''', (name, market_link, steam_link, market_price, steam_autobuy, market_total, steam_autobuy_total, profit_ratio))
                     except KeyError as e:
                         print(f"Key error: {e} for item: {item}")
                 else:
@@ -53,6 +53,8 @@ async def process_items(items):
             name TEXT,
             market_link TEXT,
             steam_link TEXT,
+            market_price REAL,
+            steam_autobuy REAL,
             market_total REAL,
             steam_autobuy_total REAL,
             profit_ratio REAL
@@ -61,9 +63,16 @@ async def process_items(items):
     conn.commit()
     async with aiohttp.ClientSession() as session:
         tasks = []
+        count=0
         for item in items:
             if 500 < float(item['price']) < 10000:
                 tasks.append(fetch_and_process(session, item, cursor))
+                count+=1
+                if count==10:
+                    count=0
+                    await asyncio.gather(*tasks)
+                    conn.commit()
+                    tasks=[]
         await asyncio.gather(*tasks)
         conn.commit()
 
