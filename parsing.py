@@ -2,6 +2,7 @@ import aiohttp
 import asyncio
 import sqlite3
 import urllib.parse
+import os
 from ids import id_list
 from link_maker import create_link
 
@@ -39,13 +40,17 @@ async def fetch_and_process(session, item, cursor):
                         print(f"Key error: {e} for item: {item}")
                 else:
                     print(
-                        f"Unexpected response {response.status} with content type: {response.headers.get('Content-Type')} for URL: {steam_url}")
+                        f"Unexpected response {response.status} with content type: {response.headers.get('Content-Type')} for {name}: {steam_url}")
         except Exception as e:
             print(f"Exception occurred while fetching {steam_url}: {e}")
 
 
 async def process_items(items):
-    conn = sqlite3.connect('csgo_market.db')
+    db_path='csgo_market.db'
+    if os.path.exists(db_path):
+        os.remove(db_path)
+        print(1)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -67,12 +72,12 @@ async def process_items(items):
         for item in items:
             if 500 < float(item['price']) < 10000:
                 tasks.append(fetch_and_process(session, item, cursor))
-                count+=1
-                if count==10:
-                    count=0
-                    await asyncio.gather(*tasks)
-                    conn.commit()
-                    tasks=[]
+                # count+=1
+                # if count==10:
+                #     count=0
+                #     await asyncio.gather(*tasks)
+                #     conn.commit()
+                #     tasks=[]
         await asyncio.gather(*tasks)
         conn.commit()
 
