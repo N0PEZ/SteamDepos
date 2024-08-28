@@ -1,6 +1,6 @@
 requests
-bs4
-lxml
+beautifulsoup4
 aiohttp
 asyncio
 django
+urllib3
