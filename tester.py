@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 import requests as req
 
+
 STEAM_URL = "https://steamcommunity.com/market/itemordershistogram?country=RU&language=english&currency=5&item_nameid=49399548"
 
 def make_req():

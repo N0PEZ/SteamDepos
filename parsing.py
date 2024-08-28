@@ -4,6 +4,11 @@ import sqlite3
 import urllib.parse
 from ids import id_list
 
+
+proxy={
+    'https':'http://c8MQaOfBUPOu:RNW78Fm5@185.162.130.85:10020'
+}
+
 def format_name_for_steam(name):
     formatted_name = urllib.parse.quote(name, safe='')
     formatted_name = formatted_name.replace(' ', '%20').replace('&', '%26').replace("'", '%27').replace('|','%7C').replace('(', '%28').replace(')', '%29')
@@ -18,7 +23,7 @@ async def fetch_and_process(session, item, cursor):
     if id:
         steam_url = f'https://steamcommunity.com/market/itemordershistogram?country=RU&language=english&currency=5&item_nameid={id}'
         try:
-            async with session.get(steam_url) as response:
+            async with session.get(steam_url, proxy='http://c8MQaOfBUPOu:RNW78Fm5@185.162.130.85:10020') as response:
                 if response.status == 200:
                     steam_data = await response.json()
                     try:
@@ -46,20 +51,20 @@ async def process_items(items):
     cursor = conn.cursor()
     async with aiohttp.ClientSession() as session:
         tasks = []
-        count=0
-        overall=0
+        # count=0
+        # overall=0
         for item in items:
             if 500 < float(item['price']) < 10000:
-                overall+=1
-                print(overall)
-                count+=1
+                # overall+=1
+                # print(overall)
+                # count+=1
                 tasks.append(fetch_and_process(session, item, cursor))
-                if count==5:
-                    count=0
-                    await asyncio.gather(*tasks)
-                    tasks=[]
-                    conn.commit()
-                    await asyncio.sleep(0.05)
+                # if count==10:
+                #     count=0
+                    # await asyncio.gather(*tasks)
+                    # tasks=[]
+                    # conn.commit()
+                    # await asyncio.sleep(0.01)
 
 
         await asyncio.gather(*tasks)
