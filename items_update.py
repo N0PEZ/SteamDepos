@@ -38,7 +38,7 @@ cursor = conn.cursor()
 
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS items (
-        id TEXT UNIQUE,
+        id TEXT,
         name TEXT,
         market_link TEXT,
         steam_link TEXT,

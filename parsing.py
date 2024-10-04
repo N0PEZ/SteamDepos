@@ -5,9 +5,10 @@ import urllib.parse
 from ids import id_list
 
 
-proxy={
-    'https':'http://c8MQaOfBUPOu:RNW78Fm5@185.162.130.85:10020'
-}
+proxies=[
+'http://ace6a6db:befa43266e@37.221.83.23:30013',
+'http://WLk96X:Vd0CaAy4ZU@188.130.129.23:1050'
+]
 
 def format_name_for_steam(name):
     formatted_name = urllib.parse.quote(name, safe='')
@@ -23,7 +24,7 @@ async def fetch_and_process(session, item, cursor):
     if id:
         steam_url = f'https://steamcommunity.com/market/itemordershistogram?country=RU&language=english&currency=5&item_nameid={id}'
         try:
-            async with session.get(steam_url, proxy='http://c8MQaOfBUPOu:RNW78Fm5@185.162.130.85:10020') as response:
+            async with session.get(steam_url, proxy='http://ace6a6db:befa43266e@37.221.83.23:30013') as response:
                 if response.status == 200:
                     steam_data = await response.json()
                     try:
