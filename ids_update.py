@@ -18,7 +18,7 @@ items = data.get('items', [])
 for item in items:
     name = item.get('market_hash_name', '')
     price = round(float(item.get('price', 0)) * 1.075, 2)
-    if price > 100 and price < 50000:
+    if True:    #price > 100 and price < 50000
         steam_listing = format_name_for_steam(name)
         if name in id_list:
             continue
