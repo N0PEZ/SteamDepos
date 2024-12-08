@@ -1,0 +1,130 @@
+body {
+  font-family: Inter, sans-serif;
+  overflow-y: scroll;
+  background-color: rgb(17, 17, 20);
+  margin: 0;
+}
+
+header {
+  display: flex;
+  background-color: rgb(24, 26, 30);
+  position: fixed;
+  width: 100%;
+  height: 70px;
+  padding-right: 10px;
+  justify-content: space-between;
+}
+
+header > img {
+  margin: 10px;
+}
+
+.sort {
+  color: white;
+  display: flex;
+  text-align: center;
+  border-style: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+.sort_option {
+  display: flex;
+  visibility: hidden;
+}
+
+.sort_option > label {
+  cursor: pointer;
+  visibility: visible;
+  border-style: solid;
+  border-color: grey;
+  border-radius: 5px;
+  border-width: 2px;
+  padding: 3px;
+}
+
+.sort_option > input:checked + label {
+  color: #50a7cc;
+}
+
+.filter {
+  text-align: center;
+  color: white;
+  border-style: hidden;
+}
+
+.filter > input {
+  background-color: rgb(47, 47, 54);
+  padding: 5px;
+  color: #50a7cc;
+  border-radius: 10px;
+  margin: 2px;
+  border: none;
+}
+
+.filter > input::-webkit-outer-spin-button, 
+.filter > input::-webkit-inner-spin-button {
+    -webkit-appearance: none
+}
+
+.content {
+  list-style: none;
+  margin: 0;
+  padding: 5px;
+  padding-left: 20px;
+  padding-top: 76px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(auto, 30%));
+  gap: 30px;
+  justify-content: center;
+}
+
+.skin {
+  display: block;
+  text-align: center;
+  color: white;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  height: 250px;
+  width: 300px;
+  padding: 5px;
+  border-style: hidden;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #0e0e0e, #42140d);
+}
+
+.skin_name {
+  font-weight: bold;
+  font-size: 14px;
+  height: 30px;
+  overflow-x: visible;
+}
+
+.skin_profit {
+  color: rgb(0, 173, 9);
+  font-size: 30px;
+  height: 50px;
+}
+
+.buysell {
+  display: flex;
+  justify-content: space-between;
+  margin-inline: 20px;
+  font-size: large;
+}
+
+.prices {
+  display: flex;
+  justify-content: space-between;
+  margin-inline: 10px;
+  font-size: 26px;
+  color: white;
+}
+
+.prices > a {
+  background-color: #070707;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  text-decoration: none;
+}

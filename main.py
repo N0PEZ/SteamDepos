@@ -1,25 +1,14 @@
 import aiohttp
 import asyncio
-import sqlite3
-import urllib.parse
+import requests
 from ids import id_list
+import json
+from link_maker import create_link, format_name_for_steam, ban_words
 
+depos = []
+withdraw = []
 
-# proxies=[
-# 'http://ace6a6db:befa43266e@37.221.83.23:30013',
-# 'http://WLk96X:Vd0CaAy4ZU@188.130.129.23:1050'
-# ]
-
-def format_name_for_steam(name):
-    formatted_name = urllib.parse.quote(name, safe='')
-    formatted_name = formatted_name.replace(' ', '%20').replace('&', '%26').replace("'", '%27').replace('|','%7C').replace('(', '%28').replace(')', '%29')
-    return formatted_name
-
-
-async def fetch_and_process(session, item, cursor):
-    name = item['market_hash_name']
-    market_price=item['price']
-    market_total = round(float(market_price) * 1.075, 2)
+async def steam_api(session, name, market_price, market_autobuy):
     id = id_list.get(name, None)
     if id:
         steam_url = f'https://steamcommunity.com/market/itemordershistogram?country=RU&language=english&currency=5&item_nameid={id}'
@@ -27,64 +16,50 @@ async def fetch_and_process(session, item, cursor):
             async with session.get(steam_url) as response:
                 if response.status == 200:
                     steam_data = await response.json()
-                    try:
-                        steam_autobuy = steam_data['buy_order_graph'][0][0]
-                        steam_autobuy_total = round(steam_autobuy * 0.87, 2)
-                        profit_ratio = round(steam_autobuy_total / market_total, 3)
-                        if profit_ratio:
-                            cursor.execute('''
-                                UPDATE items 
-                                SET market_price=?, steam_autobuy=?, market_total=?, steam_autobuy_total=?, profit_ratio=?
-                                WHERE id = ''' + str(id) + '''
-                            ''', (market_price, steam_autobuy, market_total, steam_autobuy_total, profit_ratio))
-                    except KeyError as e:
-                        print(f"Key error: {e} for item: {item}")
+                    steam_listing = format_name_for_steam(name)
+                    market_link = create_link(name, format_name_for_steam(steam_listing))
+                    steam_link = 'https://steamcommunity.com/market/listings/730/' + format_name_for_steam(steam_listing)
+                    steam_price = steam_data['sell_order_graph'][0][0]
+                    steam_autobuy = steam_data['buy_order_graph'][0][0]
+                    profit_ratio = round(steam_autobuy / market_price, 3)
+                    withdrawal_profit = round(market_autobuy / steam_price, 3)
+                    if profit_ratio>=0.9:
+                        depos.append({'id':id, 'name':name, 'market_link':market_link, 'steam_link':steam_link, 'market_price':market_price, 'market_autobuy':market_autobuy, 'steam_price':steam_price, 'steam_autobuy':steam_autobuy, 'profit_ratio':profit_ratio, 'withdrawal_profit':withdrawal_profit})
+                    elif withdrawal_profit>0.8:
+                        withdraw.append({'id':id, 'name':name, 'market_link':market_link, 'steam_link':steam_link, 'market_price':market_price, 'market_autobuy':market_autobuy, 'steam_price':steam_price, 'steam_autobuy':steam_autobuy, 'profit_ratio':profit_ratio, 'withdrawal_profit':withdrawal_profit})
                 else:
                     print(
-                        f"Unexpected response {response.status} with content type: {response.headers.get('Content-Type')} for {name}: {steam_url}")
+                        f"Response status {response.status} for {name}: {steam_url}")
         except Exception as e:
             print(f"Exception occurred while fetching {steam_url}: {e}")
 
-
-async def process_items(items):
-    db_path='csgo_market.db'
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+async def process_items(items, autobuys):
     async with aiohttp.ClientSession() as session:
         tasks = []
-        # count=0
-        # overall=0
+
         for item in items:
-            if 500 < float(item['price']) < 10000:
-                # overall+=1
-                # print(overall)
-                # count+=1
-                tasks.append(fetch_and_process(session, item, cursor))
-                # if count==10:
-                #     count=0
-                    # await asyncio.gather(*tasks)
-                    # tasks=[]
-                    # conn.commit()
-                    # await asyncio.sleep(0.01)
-
-
+            name = item['market_hash_name']
+            market_price=float(item['price'])
+            market_autobuy = autobuys.get(name, None)
+            if 500 < float(item['price']) < 10000 and not any(banword in item['market_hash_name'] for banword in ban_words):
+                tasks.append(steam_api(session, name, market_price, market_autobuy))
         await asyncio.gather(*tasks)
-        conn.commit()
 
-    conn.close()
+        deposit=sorted(depos, key=lambda d: d['profit_ratio'], reverse=True)
+        withdrawal=sorted(withdraw, key=lambda d: d['withdrawal_profit'], reverse=True)
+        with open('ui/src/depos.json', 'w') as file:
+            json.dump(deposit, file)
+        with open('ui/src/withdraw.json', 'w') as file:
+            json.dump(withdrawal, file)
 
 
-async def cs_market_api(url):
+async def cs_market_api():
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            if response.status == 200:
-                data = await response.json()
-                items = data.get('items', [])
-                await process_items(items)
-            else:
-                print(f"Failed to fetch data. Status code: {response.status}")
+        async with session.get("https://market.csgo.com/api/v2/prices/RUB.json") as response:
+            data = await response.json()
+            items = data.get('items', [])
+            orders_api = requests.get("https://market.csgo.com/api/v2/prices/orders/RUB.json").json()
+            autobuys = {item['market_hash_name']: item['price'] for item in orders_api.get('items', [])}
+            await process_items(items, autobuys)
 
-
-
-cs_market_url = "https://market.csgo.com/api/v2/prices/RUB.json"
-asyncio.run(cs_market_api(cs_market_url))
+asyncio.run(cs_market_api())
