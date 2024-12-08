@@ -17,8 +17,8 @@ async def steam_api(session, name, market_price, market_autobuy):
                 if response.status == 200:
                     steam_data = await response.json()
                     steam_listing = format_name_for_steam(name)
-                    market_link = create_link(name, format_name_for_steam(steam_listing))
-                    steam_link = 'https://steamcommunity.com/market/listings/730/' + format_name_for_steam(steam_listing)
+                    market_link = create_link(name, steam_listing)
+                    steam_link = 'https://steamcommunity.com/market/listings/730/' + steam_listing
                     steam_price = steam_data['sell_order_graph'][0][0]
                     steam_autobuy = steam_data['buy_order_graph'][0][0]
                     profit_ratio = round(steam_autobuy / market_price, 3)

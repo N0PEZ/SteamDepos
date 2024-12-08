@@ -55,9 +55,9 @@ const Body = ({sortBy, minPrice, maxPrice, setMax}) => {
         </div>
         <p></p>
         <div className="prices">
-          <a href={buy_ref}>{price}₽</a>
+          <a href={buy_ref} target='_blank'>{price}₽</a>
 
-          <a href={sell_ref}>{autobuy}₽</a>
+          <a href={sell_ref} target='_blank'>{autobuy}₽</a>
         </div>
       </li>
     )
