@@ -33,7 +33,10 @@ const Header = ({setSort, setMin, setMax}) => {
 
 
 
-const Body = ({sortBy, minPrice, maxPrice}) => {
+const Body = ({sortBy, minPrice, maxPrice, setMax}) => {
+  if (maxPrice==0){
+    setMax(10000)
+  }
   function createSkin (skin, sort, buy, sell, buy_link, sell_link) {
     let id = skin['id']
     let name = skin['name']
@@ -61,6 +64,7 @@ const Body = ({sortBy, minPrice, maxPrice}) => {
   }
 
   function sort (sort) {
+
     if (sort) {
       return deposData.map((skin) => 
         {if (skin['market_price']>minPrice && skin['market_price']<maxPrice){return createSkin(skin, 'profit_ratio', 'market_price', 'steam_autobuy', 'market_link', 'steam_link')}}
@@ -89,7 +93,7 @@ function App() {
   return (
     <>
     <Header setSort={setSort} setMin={setMin} setMax={setMax} />
-    <Body sortBy={sortBy} minPrice={minPrice} maxPrice={maxPrice} />
+    <Body sortBy={sortBy} minPrice={minPrice} maxPrice={maxPrice} setMax={setMax} />
     
     </>
   );
