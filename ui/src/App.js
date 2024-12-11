@@ -5,6 +5,7 @@ import withdrawData from './withdraw.json'
 
 
 const Header = ({setSort, setMin, setMax}) => {
+  console.log(deposData, withdrawData)
   return (
     <div>
     <header>
