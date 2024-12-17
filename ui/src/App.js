@@ -1,10 +1,6 @@
 import React, {useState} from "react";
 import './App.css';
 
-let deposData = []
-let withdrawData = []
-fetch('https://steamdepos.ru/api/depos.json').then((res) => res.json()).then((data) => {deposData=data.data})
-fetch('https://steamdepos.ru/api/withdraw.json').then((res) => res.json()).then((data) => {withdrawData=data.data})
 
 const Header = ({setSort, setMin, setMax}) => {
   return (
@@ -35,7 +31,9 @@ const Header = ({setSort, setMin, setMax}) => {
 
 
 
-const Body = ({sortBy, minPrice, maxPrice, setMax}) => {
+const Body = ({sortBy, minPrice, maxPrice, setMax, deposData, setDeposData, withdrawData, setWithdrawData}) => {
+  fetch('https://steamdepos.ru/api/depos.json').then((res) => res.json()).then((data) => {setDeposData(data.data)})
+  fetch('https://steamdepos.ru/api/withdraw.json').then((res) => res.json()).then((data) => {setWithdrawData(data.data)})
   if (maxPrice==0){
     setMax(10000)
   }
@@ -91,11 +89,12 @@ function App() {
   const [sortBy, setSort] = useState(true)
   const [minPrice, setMin] = useState(0)
   const [maxPrice, setMax] = useState(100000)
+  const [deposData, setDeposData] = useState([])
+  const [withdrawData, setWithdrawData] = useState([])
   return (
     <>
     <Header setSort={setSort} setMin={setMin} setMax={setMax} />
-    <Body sortBy={sortBy} minPrice={minPrice} maxPrice={maxPrice} setMax={setMax} />
-    
+    <Body sortBy={sortBy} minPrice={minPrice} maxPrice={maxPrice} setMax={setMax} deposData={deposData} setDeposData={setDeposData} withdrawData={withdrawData} setWithdrawData={setWithdrawData} />
     </>
   );
 }
