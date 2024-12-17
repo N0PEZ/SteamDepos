@@ -1,11 +1,12 @@
 import React, {useState} from "react";
 import './App.css';
-import deposData from './depos.json'
-import withdrawData from './withdraw.json'
 
+let deposData = []
+let withdrawData = []
+fetch('https://steamdepos.ru/api/depos.json').then((res) => res.json()).then((data) => {deposData=data.data})
+fetch('https://steamdepos.ru/api/withdraw.json').then((res) => res.json()).then((data) => {withdrawData=data.data})
 
 const Header = ({setSort, setMin, setMax}) => {
-  console.log(deposData, withdrawData)
   return (
     <div>
     <header>
@@ -65,7 +66,6 @@ const Body = ({sortBy, minPrice, maxPrice, setMax}) => {
   }
 
   function sort (sort) {
-
     if (sort) {
       return deposData.map((skin) => 
         {if (skin['market_price']>minPrice && skin['market_price']<maxPrice){return createSkin(skin, 'profit_ratio', 'market_price', 'steam_autobuy', 'market_link', 'steam_link')}}
