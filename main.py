@@ -7,7 +7,7 @@ from link_maker import create_link, format_name_for_steam, ban_words
 
 depos = []
 withdraw = []
-
+# 123
 async def steam_api(session, name, market_price, market_autobuy):
     id = id_list.get(name, None)
     if id:
