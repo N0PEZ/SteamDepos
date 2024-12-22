@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import './App.css';
 
 
@@ -32,11 +32,17 @@ const Header = ({setSort, setMin, setMax}) => {
 
 
 const Body = ({sortBy, minPrice, maxPrice, setMax, deposData, setDeposData, withdrawData, setWithdrawData}) => {
-  fetch('https://steamdepos.ru/api/depos.json').then((res) => res.json()).then((data) => {setDeposData(data.data)})
-  fetch('https://steamdepos.ru/api/withdraw.json').then((res) => res.json()).then((data) => {setWithdrawData(data.data)})
-  if (maxPrice==0){
-    setMax(10000)
-  }
+  useEffect(()=>{
+    fetch('https://steamdepos.ru/api/depos.json').then((res) => res.json()).then((data) => {setDeposData(data.data)});
+    fetch('https://steamdepos.ru/api/withdraw.json').then((res) => res.json()).then((data) => {setWithdrawData(data.data)});
+  }, [setDeposData, setWithdrawData])
+  
+  useEffect(()=>{
+    if (maxPrice==0){
+      setMax(10000)
+    }
+  }, [maxPrice, setMax])
+  
   function createSkin (skin, sort, buy, sell, buy_link, sell_link) {
     let id = skin['id']
     let name = skin['name']

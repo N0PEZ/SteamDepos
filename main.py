@@ -7,7 +7,7 @@ from link_maker import create_link, format_name_for_steam, ban_words
 
 depos = []
 withdraw = []
-# 123
+
 async def steam_api(session, name, market_price, market_autobuy):
     id = id_list.get(name, None)
     if id:
@@ -48,9 +48,9 @@ async def process_items(items, autobuys):
         deposit=sorted(depos, key=lambda d: d['profit_ratio'], reverse=True)
         withdrawal=sorted(withdraw, key=lambda d: d['withdrawal_profit'], reverse=True)
         with open('/var/www/steamdepos/api/depos.json', 'w') as file:
-            json.dump(deposit, file)
+            json.dump({"data":deposit}, file)
         with open('/var/www/steamdepos/api/withdraw.json', 'w') as file:
-            json.dump(withdrawal, file)
+            json.dump({"data":withdrawal}, file)
 
 
 async def cs_market_api():
