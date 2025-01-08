@@ -18,10 +18,11 @@ weapons_and_types = {'Pistol':['CZ75-Auto', 'Desert Eagle', 'Dual Berettas', 'Fi
          '| SEAL Frogman', '| Sabre Footsoldier', '| NZSAS', '| Phoenix', '| Elite Crew', '| FBI HRT', '| FBI Sniper', '| Brazilian 1st Battalion'],
 'Pass':['Pass'],
 'Equipment':['Zeus x27'],
-'Pin':['Pin']}
+'Pin':['Pin'],
+'Charm':['Charm |']}
 
 weapon_types = ['Pistol', 'Rifle', 'Sniper%20Rifle', 'SMG', 'Machinegun', 'Shotgun', 'Knife',
-                  'Container', 'Key', 'Patch', 'Music%20Kit', 'Agent', 'Pass', 'Equipment', 'Pin']
+                  'Container', 'Key', 'Patch', 'Music%20Kit', 'Agent', 'Pass', 'Equipment', 'Pin', 'Charm']
 def create_link(name, steam_listing):
     for weapon_type in weapon_types:
         for weapon in weapons_and_types[weapon_type]:
