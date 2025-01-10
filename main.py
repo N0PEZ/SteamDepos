@@ -48,9 +48,9 @@ async def process_items(items, autobuys):
         deposit=sorted(depos, key=lambda d: d['profit_ratio'], reverse=True)
         withdrawal=sorted(withdraw, key=lambda d: d['withdrawal_profit'], reverse=True)
         with open('/var/www/steamdepos/api/depos.json', 'w') as file:
-            json.dump({"data":deposit}, file)
+            json.dump(deposit, file)
         with open('/var/www/steamdepos/api/withdraw.json', 'w') as file:
-            json.dump({"data":withdrawal}, file)
+            json.dump(withdrawal, file)
 
 
 async def cs_market_api():

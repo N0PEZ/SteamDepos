@@ -33,8 +33,8 @@ const Header = ({setSort, setMin, setMax}) => {
 
 const Body = ({sortBy, minPrice, maxPrice, setMax, deposData, setDeposData, withdrawData, setWithdrawData}) => {
   useEffect(()=>{
-    fetch('https://steamdepos.ru/api/depos.json').then((res) => res.json()).then((data) => {setDeposData(data.data)});
-    fetch('https://steamdepos.ru/api/withdraw.json').then((res) => res.json()).then((data) => {setWithdrawData(data.data)});
+    fetch('https://steamdepos.ru/api/depos.json').then((res) => res.json()).then((data) => {setDeposData(data)});
+    fetch('https://steamdepos.ru/api/withdraw.json').then((res) => res.json()).then((data) => {setWithdrawData(data)});
   }, [setDeposData, setWithdrawData])
   
   useEffect(()=>{
