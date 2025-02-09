@@ -40,8 +40,12 @@ async def process_items(items, autobuys):
         for item in items:
             name = item['market_hash_name']
             market_price=float(item['price'])
-            market_autobuy = autobuys.get(name, None)
+           
             if 500 < float(item['price']) < 10000 and not any(banword in item['market_hash_name'] for banword in ban_words):
+                try:
+                    market_autobuy = autobuys[name]
+                except:
+                    market_autobuy = 1
                 tasks.append(steam_api(session, name, market_price, market_autobuy))
         await asyncio.gather(*tasks)
 

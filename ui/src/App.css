@@ -70,13 +70,13 @@ header > img {
 .content {
   list-style: none;
   margin: 0;
-  padding: 5px;
-  padding-left: 20px;
+  padding: 10px;
   padding-top: 76px;
   display: grid;
-  grid-template-columns: repeat(5, minmax(auto, 30%));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 10px;
   justify-content: center;
+  justify-items: center;
 }
 
 .skin {
