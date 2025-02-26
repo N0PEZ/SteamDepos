@@ -24,9 +24,9 @@ async def steam_api(session, name, market_price, market_autobuy):
                     profit_ratio = round(steam_autobuy / market_price, 3)
                     withdrawal_profit = round(market_autobuy / steam_price, 3)
                     if profit_ratio>=0.9:
-                        depos.append({'id':id, 'name':name, 'market_link':market_link, 'steam_link':steam_link, 'market_price':market_price, 'market_autobuy':market_autobuy, 'steam_price':steam_price, 'steam_autobuy':steam_autobuy, 'profit_ratio':profit_ratio, 'withdrawal_profit':withdrawal_profit})
+                        depos.append({'name':name, 'market_link':market_link, 'steam_link':steam_link, 'market_price':market_price, 'steam_autobuy':steam_autobuy, 'profit_ratio':profit_ratio})
                     elif withdrawal_profit>0.8:
-                        withdraw.append({'id':id, 'name':name, 'market_link':market_link, 'steam_link':steam_link, 'market_price':market_price, 'market_autobuy':market_autobuy, 'steam_price':steam_price, 'steam_autobuy':steam_autobuy, 'profit_ratio':profit_ratio, 'withdrawal_profit':withdrawal_profit})
+                        withdraw.append({'name':name, 'market_link':market_link, 'steam_link':steam_link, 'market_autobuy':market_autobuy, 'steam_price':steam_price, 'withdrawal_profit':withdrawal_profit})
                 else:
                     print(
                         f"Response status {response.status} for {name}: {steam_url}")
